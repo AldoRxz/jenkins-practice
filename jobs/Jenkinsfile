@@ -11,11 +11,11 @@ pipeline {
   }
   stages {
 
-    stage("paso 1"){
+    stage("step 1"){
         
           steps {
               script {			
-              sh "echo 'hola mundo'"
+              sh "echo 'print hello world'"
             }
           }
         }
