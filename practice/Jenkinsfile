@@ -1,0 +1,27 @@
+pipeline{
+    agent any
+    
+    stage('Check Python Version') {
+        steps {
+            sh 'python3 --version'
+        }
+    }
+
+    stages{
+        ('Run python code')
+        steps{
+            sh "python3 hola.py"
+        }
+    }
+
+    post {
+          success {
+                sh "echo 'fase success'"
+            }
+
+          failure {
+                sh "echo 'fase failure'"
+          }
+          
+      }
+}
