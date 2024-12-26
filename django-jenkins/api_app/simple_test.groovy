@@ -3,13 +3,13 @@ pipeline {
 
     agent any
 
-    
+
     stages {
         stage('Setup') {
             steps {
                 dir('/workspace/django-jenkins-demo') {
                     script {
-                        sh 'source env/bin/activate || .\\env\\Scripts\\activate'
+                        sh 'source venv/bin/activate || .\\venv\\bin\\activate'
                     }
                 }
             }
