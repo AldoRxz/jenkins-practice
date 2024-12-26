@@ -1,9 +1,9 @@
 
 pipeline {
 
-    agent {
-        label 'any'
-    }
+    agent any
+
+    
     stages {
         stage('Setup') {
             steps {
