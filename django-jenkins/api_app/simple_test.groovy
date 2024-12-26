@@ -9,7 +9,8 @@ pipeline {
             steps {
                 dir('/workspace/django-jenkins-demo') {
                     script {
-                        sh 'source venv/Scripts/activate || .\\venv\\Scripts\\activate'
+                        sh 'python3 -m venv venv'
+                        sh 'source venv/bin/activate || .\\venv\\Scripts\\activate'
                     }
                 }
             }
