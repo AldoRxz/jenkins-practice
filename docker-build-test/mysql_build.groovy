@@ -28,7 +28,7 @@ pipeline {
 
                     sed -i 's/^MYSQL_DATABASE=.*/MYSQL_DATABASE=${params.branch_name}_db/' local.env;
 
-                    sed -i "s/ON .*/ON test_${params.branch_name}.* TO 'user'@'%';/" init.sql;
+                    sed -i "s/ON .*/ON test_${params.branch_name}_db.* TO 'user'@'%';/" init.sql;
 
                     """
             }

@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         CRED = credentials('sandbox')
-        DB = "${params.branch_name}_db" // Base de datos personalizada
+        DB = "${params.branch_name}_db" 
     }
 
     stages {
@@ -27,9 +27,15 @@ pipeline {
                 sshCommand remote: remote, command: """
                     cd /root/test/docker-tests;
 
-                    # Modificar docker-compose.yml para usar el nuevo contexto del branch
-                    sed -i "s|context: ./django-jenkins-demo|context: ./${params.branch_name}|" docker-compose.yml;
-                    sed -i "s|container_name: django_api|container_name: api_${params.branch_name}|" docker-compose.yml;
+
+                    # mysql
+                    sed -i "s|container_name: mysql|container_name: mysql_${params.branch_name}|" docker-compose.yml;
+
+                    # api
+                    sed -i "s|container_name: api|container_name: api_${params.branch_name}|" docker-compose.yml;
+
+                    sed -i "s|context: ./api|context: ./${params.branch_name}|" docker-compose.yml;
+
                     sed -i "s|volumes:.*|volumes:\\n      - ./${params.branch_name}:/app|" docker-compose.yml;
                     sed -i "s|env_file:.*|env_file:\\n      - ./${params.branch_name}/local.env|" docker-compose.yml;
 
