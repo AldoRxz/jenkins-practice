@@ -27,17 +27,39 @@ pipeline {
                 sshCommand remote: remote, command: """
                     cd /root/test/docker-tests;
 
+                    # Crear el archivo local.env
+                    cat > local.env <<EOL
+                    version: '3'
 
-                    # mysql
-                    sed -i "s|container_name: mysql|container_name: mysql_${params.branch_name}|" docker-compose.yml;
+                    services:
+                        mysql:
+                            container_name: mysql_${params.branch_name}
+                            platform: linux/x86_64
+                            build:
+                                context: ./mysql
+                                dockerfile: Dockerfile
+                            ports:
+                                - "3307:3306"
+                            env_file:
+                                - ./mysql/local.env
 
-                    # api
-                    sed -i "s|container_name: api|container_name: api_${params.branch_name}|" docker-compose.yml;
+                        django-jenkins:
+                            depends_on:
+                            - mysql
+                            container_name: api_${params.branch_name}
+                            platform: linux/x86_64
+                            build:
+                                context: ./${params.branch_name}
+                                dockerfile: dev.Dockerfile
+                            restart: unless-stopped
+                            volumes:
+                                - ./${params.branch_name}:/app
+                            ports:
+                                - "8050:8050"
+                            env_file:
+                                - ./${params.branch_name}/local.env
 
-                    sed -i "s|context: ./api|context: ./${params.branch_name}|" docker-compose.yml;
-
-                    sed -i "s|volumes:.*|volumes:\\n      - ./${params.branch_name}:/app|" docker-compose.yml;
-                    sed -i "s|env_file:.*|env_file:\\n      - ./${params.branch_name}/local.env|" docker-compose.yml;
+                    EOL
 
                 """
             }
