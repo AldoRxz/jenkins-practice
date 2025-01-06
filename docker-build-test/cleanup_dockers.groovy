@@ -8,7 +8,6 @@ pipeline {
 
     environment {
         CRED = credentials('sandbox')
-        DB = "${params.branch_name}_db" // Base de datos personalizada
     }
 
     stages {

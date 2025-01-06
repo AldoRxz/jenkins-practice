@@ -27,39 +27,39 @@ pipeline {
                 sshCommand remote: remote, command: """
                     cd /root/test/docker-tests;
 
-                    # Crear el archivo local.env
-                    cat > local.env <<EOL
-                    version: '3'
+                    # Crear el archivo docker-compose.yml
+                    cat > docker-compose.yml <<EOL
+version: '3'
 
-                    services:
-                        mysql:
-                            container_name: mysql_${params.branch_name}
-                            platform: linux/x86_64
-                            build:
-                                context: ./mysql
-                                dockerfile: Dockerfile
-                            ports:
-                                - "3307:3306"
-                            env_file:
-                                - ./mysql/local.env
+services:
+    mysql:
+        container_name: mysql_${params.branch_name}
+        platform: linux/x86_64
+        build:
+            context: ./mysql
+            dockerfile: Dockerfile
+        ports:
+            - "3307:3306"
+        env_file:
+            - ./mysql/local.env
 
-                        django-jenkins:
-                            depends_on:
-                            - mysql
-                            container_name: api_${params.branch_name}
-                            platform: linux/x86_64
-                            build:
-                                context: ./${params.branch_name}
-                                dockerfile: dev.Dockerfile
-                            restart: unless-stopped
-                            volumes:
-                                - ./${params.branch_name}:/app
-                            ports:
-                                - "8050:8050"
-                            env_file:
-                                - ./${params.branch_name}/local.env
+    django-jenkins:
+        depends_on:
+            - mysql
+        container_name: api_${params.branch_name}
+        platform: linux/x86_64
+        build:
+            context: ./${params.branch_name}
+            dockerfile: dev.Dockerfile
+        restart: unless-stopped
+        volumes:
+            - ./${params.branch_name}:/app
+        ports:
+            - "8050:8050"
+        env_file:
+            - ./config/local.env
 
-                    EOL
+EOL
 
                 """
             }

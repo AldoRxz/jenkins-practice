@@ -8,7 +8,6 @@ pipeline {
 
     environment {
         CRED = credentials('sandbox')
-        DB = "${params.branch_name}_db" // Base de datos personalizada
     }
 
     stages {
@@ -22,14 +21,10 @@ pipeline {
             }
         }
 
-        stage('MODIFY DOCKER-COMPOSE FILES') {
+        stage('EXECUTE DOCKER-TESTS') {
             steps {
-                sshCommand remote: remote, command: """
-                    cd /root;
-
-                    docker exec -it api_${params.branch_name} python manage.py test api_app.tests.simple_test 
-                
-                """
+                sshCommand remote: remote, 
+                    command: "cd /root/test/docker-tests && docker exec api_${params.branch_name} python manage.py test api_app.tests.simple_test "
             }
         }
     }
