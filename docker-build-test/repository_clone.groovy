@@ -21,17 +21,23 @@ pipeline {
                 }
             }
         }
+        stage('CREATE FOLDER') {
+            steps {
+                sshCommand remote: remote,
+                    command: "cd /root/test/docker-tests && mkdir ${params.branch_name}"
+            }
+        }
         stage('CLONE REPO') {
             steps {
                 sshCommand remote: remote,
-                    command: "cd /root/test/docker-tests && git clone https://github.com/AldoRxz/django-jenkins-demo.git ${params.branch_name}"
+                    command: "cd /root/test/docker-tests/${params.branch_name} && git clone https://github.com/CodeNation-Studio-Dev/keski_proj_backend.git ${params.branch_name}"
             }
         }
-        // stage('CHECKOUT BRANCH') {
-        //     steps {
-        //         sshCommand remote: remote,
-        //             command: "cd /root/test/docker-tests/${params.branch name} && git stash && git fetch && git checkout ${params.branch_name} && git pull"
-        //     }
-        // }
+        stage('CHECKOUT BRANCH') {
+            steps {
+                sshCommand remote: remote,
+                    command: "cd /root/test/docker-tests/${params.branch name} && git stash && git fetch && git checkout ${params.branch_name} && git pull"
+            }
+        }
     }
 }

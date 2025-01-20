@@ -52,8 +52,6 @@ services:
             context: ./${params.branch_name}
             dockerfile: dev.Dockerfile
         restart: unless-stopped
-        volumes:
-            - ./${params.branch_name}:/app
         ports:
             - "8050:8050"
         env_file:

@@ -30,8 +30,9 @@ pipeline {
                     docker stop mysql_${params.branch_name}
                     docker rm api_${params.branch_name}
                     docker rm mysql_${params.branch_name}
-                    docker rmi api_${params.branch_name}
-                    docker rmi mysql_${params.branch_name}
+                    
+                    // docker rmi docker-tests-django
+                    // docker rmi docker-tests-mysql
 
                 """
             }
