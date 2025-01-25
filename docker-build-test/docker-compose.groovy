@@ -2,6 +2,7 @@ def remote = [:]
 remote.name = "${params.host_name}"
 remote.host = "${params.host_ip}"
 remote.branch = "${params.branch_name}"
+remote.branchid = "${params.branch_id}"
 
 pipeline {
     agent any
@@ -25,7 +26,7 @@ pipeline {
         stage('MODIFY DOCKER-COMPOSE FILES') {
             steps {
                 sshCommand remote: remote, command: """
-                    cd /root/test/docker-tests;
+                    cd /root/test/docker-tests/${params.branch_name};
 
                     # Crear el archivo docker-compose.yml
                     cat > docker-compose.yml <<EOL
@@ -54,8 +55,6 @@ services:
         restart: unless-stopped
         ports:
             - "8050:8050"
-        env_file:
-            - ./config/local.env
 
 EOL
 

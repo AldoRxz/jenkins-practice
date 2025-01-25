@@ -2,6 +2,7 @@ def remote = [:]
 remote.name = "${params.host_name}"
 remote.host = "${params.host_ip}"
 remote.branch = "${params.branch_name}"
+remote.branchid = "${params.branch_id}"
 
 pipeline {
     agent any
@@ -24,7 +25,7 @@ pipeline {
         stage('DOCKER BUILD') {
             steps {
                 sshCommand remote: remote,
-                    command: "cd /root/test/docker-tests && docker compose up --build -d"
+                    command: "cd /root/test/docker-tests/${params.branch-name} && docker compose up --build -d"
             }
         }
     }

@@ -2,6 +2,7 @@ def remote = [:]
 remote.name = "${params.host_name}"
 remote.host = "${params.host_ip}"
 remote.branch = "${params.branch_name}"
+remote.branchid = "${params.branch_id}"
 
 pipeline {
     agent any
@@ -31,8 +32,7 @@ pipeline {
                     docker rm api_${params.branch_name}
                     docker rm mysql_${params.branch_name}
                     
-                    // docker rmi docker-tests-django
-                    // docker rmi docker-tests-mysql
+
 
                 """
             }
@@ -43,27 +43,6 @@ pipeline {
                     cd /root/test/docker-tests;
 
                     rm -rf ${params.branch_name}
-
-                """
-            }
-        }
-        stage('CLEAN MYSQL FILES') {
-            steps {
-                sshCommand remote: remote, command: """
-                    cd /root/test/docker-tests/mysql;
-
-                    rm local.env
-                    rm init.sql
-
-                """
-            }
-        }
-        stage('CLEAN DOCKER-COMPOSE FILES') {
-            steps {
-                sshCommand remote: remote, command: """
-                    cd /root/test/docker-tests;
-
-                    rm docker-compose.yml
 
                 """
             }

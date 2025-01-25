@@ -2,6 +2,7 @@ def remote = [:]
 remote.name = "${params.host_name}"
 remote.host = "${params.host_ip}"
 remote.branch = "${params.branch_name}"
+remote.branchid = "${params.branch_id}"
 
 pipeline {
     agent any
@@ -24,16 +25,18 @@ pipeline {
             steps {
                 sshCommand remote: remote,
                     command: """
-                    cd /root/test/docker-tests/config;
+                    cd /root/test/docker-tests/${params.branch_name}/${params.branch_name};
 
-                    # Crear el archivo local.env
-                    cat > local.env <<EOL
-DATABASE_NAME=${params.branch_name}_db
-DATABASE_USER=user
-DATABASE_PASSWORD=root
-DATABASE_HOST=mysql
-DATABASE_PORT=3306
-EOL
+                    python3 /root/automation/scripts/update_settings_file.py -t "do" -e "dev" -p "/root/test/docker-tests/${params.branch_name}/${params.branch_name}" -d "${params.branch_name}_db" -u "user" --local_host "mysql"
+
+                    """
+            }
+        }
+        stage('PROYECT ENTRYPOINT') {
+            steps {
+                sshCommand remote: remote,
+                    command: """
+                    cp -p /root/test/docker-tests/config/entrypoint.sh /root/test/docker-tests/${params.branch_name}/${params.branch_name}
                     """
             }
         }
@@ -41,10 +44,10 @@ EOL
             steps {
                 sshCommand remote: remote,
                     command: """
-                    cd /root/test/docker-tests/${params.branch_name};
+                    cd /root/test/docker-tests/${params.branch_name}/${params.branch_name};
 
                     # Crear el archivo Dockerfile
-                    cat > Dockerfile <<EOL
+                    cat > dev.Dockerfile <<EOL
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -67,8 +70,7 @@ RUN chmod +x /app/entrypoint.sh
 EXPOSE 8050
 
 ENTRYPOINT ["/app/entrypoint.sh"]
-# CMD ["uvicorn", "django_settings.asgi:app", "--reload", "--host", "0.0.0.0", "--port", "8050"]
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8050"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8050",  "--settings=superapp.settings_dev"]
 EOL
                     """
             }
